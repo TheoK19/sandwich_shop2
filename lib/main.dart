@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const App());
 }
 
 class App extends StatelessWidget {
@@ -14,10 +14,17 @@ class App extends StatelessWidget {
 }
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sandwich Shop App',
-      theme: ThemeData(
+Widget build(BuildContext context) {
+  return MaterialApp(
+    title: 'Sandwich Shop App',
+    home: Scaffold(
+      appBar: AppBar(title: const Text('Sandwich Counter')),
+      body: const Center(
+        child: Text('Welcome to the Sandwich Shop!'),
+      ),
+    ),
+  );
+}
         // This is the theme of your application.
         //
         // TRY THIS: Try running your application with "flutter run". You'll see

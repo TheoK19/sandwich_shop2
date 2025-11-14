@@ -49,7 +49,7 @@ class StylisedButton extends StatelessWidget {
         backgroundColor: backgroundColor,
         foregroundColor: Colors.white,
       ),
-      label: text!,
+      label: text ?? const SizedBox.shrink(),
     );
   }
 }

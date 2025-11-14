@@ -1,30 +1,57 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:myapp/main.dart';
+import 'package:first_flutter/repositories/order_repository.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('OrderRepository', () {
+    test('initial quantity should be 0', () {
+      final repository = OrderRepository(maxQuantity: 5);
+      expect(repository.quantity, 0);
+    });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    test('increment should increase quantity by 1', () {
+      final repository = OrderRepository(maxQuantity: 5);
+      repository.increment();
+      expect(repository.quantity, 1);
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('decrement should decrease quantity by 1', () {
+      final repository = OrderRepository(maxQuantity: 5);
+      repository.increment(); // quantity is now 1
+      repository.decrement(); // quantity is now 0
+      expect(repository.quantity, 0);
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    test('quantity should not exceed maxQuantity', () {
+      final repository = OrderRepository(maxQuantity: 2);
+      repository.increment(); // quantity is 1
+      repository.increment(); // quantity is 2
+      repository.increment(); // should not change
+      expect(repository.quantity, 2);
+    });
+
+    test('quantity should not go below 0', () {
+      final repository = OrderRepository(maxQuantity: 5);
+      repository.decrement(); // should not change
+      expect(repository.quantity, 0);
+    });
+  group('PricingRepository', () {
+    test('returns 0.0 when quantity is zero (footlong)', () {
+      final repo = PricingRepository(isFootlong: true, quantity: 0);
+      expect(repo.totalPrice, equals(0.0));
+    });
+
+    test('calculates total price for footlong sandwiches', () {
+      final repo = PricingRepository(isFootlong: true, quantity: 2);
+      // footlong unit price = 11.0
+      expect(repo.totalPrice, equals(22.0));
+    });
+
+    test('calculates total price for non-footlong (six-inch) sandwiches', () {
+      final repo = PricingRepository(isFootlong: false, quantity: 3);
+      // six-inch unit price = 7.0
+      expect(repo.totalPrice, equals(21.0));
+    });
+  });
+
   });
 }

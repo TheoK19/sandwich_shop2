@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'views/app_styles.dart';
-import 'repositories/order_repository.dart';
+import 'package:first_flutter/views/app_styles.dart';
+import 'package:first_flutter/repositories/order_repository.dart';
+import 'package:first_flutter/repositories/pricing_repository.dart';
 
 enum BreadType { white, wheat, wholemeal }
 
@@ -203,16 +204,14 @@ class _OrderScreenState extends State<OrderScreen> {
               children: [
                 StylisedButton(
                   onPressed: _getIncreaseCallback(),
-                  icon:
-                      Image.asset('assets/images/add-icon-transparent-23.jpg'),
+                  icon: const Icon(Icons.add),
                   text: const Text('Add'),
                   backgroundColor: Colors.green,
                 ),
                 const SizedBox(width: 8),
                 StylisedButton(
                   onPressed: _getDecreaseCallback(),
-                  icon: Image.asset(
-                      'assets/images/subtraction-vector-icon-isolated-transparent-background-subt-transparency-concept-can-be-used-web-mobile-127331674.webp'),
+                  icon: const Icon(Icons.remove),
                   text: const Text('Remove'),
                 ),
               ],
@@ -242,11 +241,17 @@ class OrderItemDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String toastText = isToasted ? 'toasted' : 'untoasted';
-    final pricingRepository = PricingRepository(isFootlong: itemType == itemType, quantity: quantity);
+    final pricingRepository = PricingRepository(isFootlong: itemType == 'footlong', quantity: quantity);
     double totalPrice = pricingRepository.totalPrice;
     String displayText =
-        '$quantity ${breadType.name} $toastText $itemType sandwich(es): ${'🥪' * quantity} (\£${totalPrice.toStringAsFixed(2)})';
         '$quantity ${breadType.name} $toastText $itemType sandwich(es): ${'🥪' * quantity} (£${totalPrice.toStringAsFixed(2)})';
 
     return Column(
       children: [
+        Text(displayText, style: normalText),
+        const SizedBox(height: 10),
+        Text('Note: $orderNote', style: normalText),
+      ],
+    );
+  }
+}

@@ -1,57 +1,39 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:first_flutter/repositories/order_repository.dart';
+import 'package:first_flutter/main.dart';
 
 void main() {
-  group('OrderRepository', () {
-    test('initial quantity should be 0', () {
-      final repository = OrderRepository(maxQuantity: 5);
-      expect(repository.quantity, 0);
-    });
+  testWidgets('OrderScreen UI Test', (WidgetTester tester) async {
+    // Build our app and trigger a frame.
+    await tester.pumpWidget(const App());
 
-    test('increment should increase quantity by 1', () {
-      final repository = OrderRepository(maxQuantity: 5);
-      repository.increment();
-      expect(repository.quantity, 1);
-    });
+    // Verify that the initial UI is rendered correctly.
+    expect(find.text('Sandwich Counter'), findsOneWidget);
+    expect(find.text('1 white untoasted footlong sandwich(es): 🥪 (£5.00)'), findsOneWidget);
 
-    test('decrement should decrease quantity by 1', () {
-      final repository = OrderRepository(maxQuantity: 5);
-      repository.increment(); // quantity is now 1
-      repository.decrement(); // quantity is now 0
-      expect(repository.quantity, 0);
-    });
+    // Tap the 'Add' button and verify the quantity increases.
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pump();
+    expect(find.text('2 white untoasted footlong sandwich(es): 🥪🥪 (£10.00)'), findsOneWidget);
 
-    test('quantity should not exceed maxQuantity', () {
-      final repository = OrderRepository(maxQuantity: 2);
-      repository.increment(); // quantity is 1
-      repository.increment(); // quantity is 2
-      repository.increment(); // should not change
-      expect(repository.quantity, 2);
-    });
+    // Tap the 'Remove' button and verify the quantity decreases.
+    await tester.tap(find.byIcon(Icons.remove));
+    await tester.pump();
+    expect(find.text('1 white untoasted footlong sandwich(es): 🥪 (£5.00)'), findsOneWidget);
 
-    test('quantity should not go below 0', () {
-      final repository = OrderRepository(maxQuantity: 5);
-      repository.decrement(); // should not change
-      expect(repository.quantity, 0);
-    });
-  group('PricingRepository', () {
-    test('returns 0.0 when quantity is zero (footlong)', () {
-      final repo = PricingRepository(isFootlong: true, quantity: 0);
-      expect(repo.totalPrice, equals(0.0));
-    });
+    // Toggle the sandwich type to six-inch.
+    await tester.tap(find.byKey(const Key('sandwich_type_switch')));
+    await tester.pump();
+    expect(find.text('1 white untoasted six-inch sandwich(es): 🥪 (£3.50)'), findsOneWidget);
 
-    test('calculates total price for footlong sandwiches', () {
-      final repo = PricingRepository(isFootlong: true, quantity: 2);
-      // footlong unit price = 11.0
-      expect(repo.totalPrice, equals(22.0));
-    });
+    // Toggle the toasted switch.
+    await tester.tap(find.byKey(const Key('toasted_switch')));
+    await tester.pump();
+    expect(find.text('1 white toasted six-inch sandwich(es): 🥪 (£3.50)'), findsOneWidget);
 
-    test('calculates total price for non-footlong (six-inch) sandwiches', () {
-      final repo = PricingRepository(isFootlong: false, quantity: 3);
-      // six-inch unit price = 7.0
-      expect(repo.totalPrice, equals(21.0));
-    });
-  });
-
+    // Enter a note in the text field.
+    await tester.enterText(find.byKey(const Key('notes_textfield')), 'No mayo');
+    await tester.pump();
+    expect(find.text('Note: No mayo'), findsOneWidget);
   });
 }

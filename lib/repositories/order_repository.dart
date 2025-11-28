@@ -1,5 +1,5 @@
 class OrderRepository {
-  int _quantity = 1;
+  int _quantity = 0;
   final int maxQuantity;
 
   OrderRepository({this.maxQuantity = 10});
@@ -8,7 +8,7 @@ class OrderRepository {
 
   bool get canIncrement => _quantity < maxQuantity;
 
-  bool get canDecrement => _quantity > 1;
+  bool get canDecrement => _quantity > 0;
 
   void increment() {
     if (canIncrement) {

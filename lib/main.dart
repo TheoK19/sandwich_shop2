@@ -86,16 +86,31 @@ class _OrderScreenState extends State<OrderScreen> {
     super.dispose();
   }
 
+  void _showConfirmation(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   VoidCallback? _getIncreaseCallback() {
     if (_orderRepository.canIncrement) {
-      return () => setState(_orderRepository.increment);
+      return () {
+        setState(_orderRepository.increment);
+        _showConfirmation('Added one item to your order.');
+      };
     }
     return null;
   }
 
   VoidCallback? _getDecreaseCallback() {
     if (_orderRepository.canDecrement) {
-      return () => setState(_orderRepository.decrement);
+      return () {
+        setState(_orderRepository.decrement);
+        _showConfirmation('Removed one item from your order.');
+      };
     }
     return null;
   }
@@ -149,7 +164,7 @@ class _OrderScreenState extends State<OrderScreen> {
       quantity: _orderRepository.quantity,
     );
     String displayText = _orderRepository.quantity > 0
-        ? '${_orderRepository.quantity} ${_selectedBreadType.name} $toastText $sandwichSizeName ${_selectedSandwichType.name}(es): ${'🥪' * _orderRepository.quantity} (£${totalPrice.toStringAsFixed(2)})'
+        ? '${_orderRepository.quantity} x ${_selectedBreadType.name} $toastText $sandwichSizeName ${_selectedSandwichType.name}(es) for a total of £${totalPrice.toStringAsFixed(2)}'
         : 'No items in your order yet.';
 
     return Scaffold(

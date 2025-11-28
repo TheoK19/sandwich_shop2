@@ -177,6 +177,19 @@ class _OrderScreenState extends State<OrderScreen> {
           'Sandwich Counter',
           style: heading1,
         ),
+        actions: <Widget>[
+          if (_orderRepository.quantity > 0)
+            Row(
+              children: <Widget>[
+                const Icon(Icons.shopping_cart),
+                const SizedBox(width: 8),
+                Text('${_orderRepository.quantity}', style: normalText),
+                const SizedBox(width: 8),
+                Text('£${totalPrice.toStringAsFixed(2)}', style: normalText),
+                const SizedBox(width: 16),
+              ],
+            ),
+        ],
       ),
       body: Center(
         child: SingleChildScrollView(

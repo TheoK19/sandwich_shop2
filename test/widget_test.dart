@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:first_flutter/main.dart';
 
 void main() {
-  testWidgets('OrderScreen UI Test with SnackBar', (WidgetTester tester) async {
+  testWidgets('OrderScreen UI Test with Cart Summary', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const App());
 
@@ -13,6 +13,8 @@ void main() {
     expect(find.text('No items in your order yet.'), findsOneWidget);
     // Check for the logo image
     expect(find.byWidgetPredicate((widget) => widget is Image && widget.image is AssetImage && (widget.image as AssetImage).assetName == 'assets/images/logo.png'), findsOneWidget);
+    // Verify that the cart summary is not displayed
+    expect(find.byIcon(Icons.shopping_cart), findsNothing);
 
     // Tap the 'Add' button to add an item
     await tester.tap(find.byIcon(Icons.add));
@@ -27,6 +29,11 @@ void main() {
     expect(find.textContaining('£8.50'), findsOneWidget);
     expect(find.byWidgetPredicate((widget) => widget is Image && widget.image is AssetImage && (widget.image as AssetImage).assetName.contains('veggieDelight_footlong.png')), findsOneWidget);
 
+    // Verify the cart summary is displayed correctly
+    expect(find.byIcon(Icons.shopping_cart), findsOneWidget);
+    expect(find.text('1'), findsOneWidget);
+    expect(find.text('£8.50'), findsOneWidget);
+
     // Tap the 'Add' button again to increase quantity
     await tester.tap(find.byIcon(Icons.add));
     await tester.pump();
@@ -36,7 +43,10 @@ void main() {
 
     // Verify the quantity and price are updated
     expect(find.textContaining('2 x'), findsOneWidget);
-    expect(find.textContaining('£17.00'), findsOneWidget);
+    expect(find.textContaining('£17.00'), findsNWidgets(2));
+
+    // Verify the cart summary is updated
+    expect(find.text('2'), findsOneWidget);
 
     // Tap the 'Remove' button to decrease quantity
     await tester.tap(find.byIcon(Icons.remove));
@@ -47,7 +57,10 @@ void main() {
 
     // Verify the quantity and price are updated
     expect(find.textContaining('1 x'), findsOneWidget);
-    expect(find.textContaining('£8.50'), findsOneWidget);
+    expect(find.textContaining('£8.50'), findsNWidgets(2));
+
+    // Verify the cart summary is updated
+    expect(find.text('1'), findsOneWidget);
 
     // Change sandwich type to six-inch
     await tester.tap(find.byKey(const Key('sandwich_type_switch')));
@@ -55,8 +68,11 @@ void main() {
 
     // Verify the type, price, and image are updated
     expect(find.textContaining('six-inch'), findsOneWidget);
-    expect(find.textContaining('£6.50'), findsOneWidget);
+    expect(find.textContaining('£6.50'), findsNWidgets(2));
     expect(find.byWidgetPredicate((widget) => widget is Image && widget.image is AssetImage && (widget.image as AssetImage).assetName.contains('veggieDelight_six_inch.png')), findsOneWidget);
+
+    // Verify the cart summary is updated
+    expect(find.text('£6.50'), findsNWidgets(2));
 
     // Toggle the toasted switch
     await tester.tap(find.byKey(const Key('toasted_switch')));
